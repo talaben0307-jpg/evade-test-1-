@@ -1,0 +1,291 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
+
+-- Xóa GUI cũ nếu đã tồn tại
+if CoreGui:FindFirstChild("EvadeHub_GUI") then
+    CoreGui.EvadeHub_GUI:Destroy()
+end
+
+-- Tạo GUI chính
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "EvadeHub_GUI"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+MainFrame.Position = UDim2.new(0, 50, 0, 150)
+MainFrame.Size = UDim2.new(0, 210, 0, 335)
+MainFrame.Draggable = true
+MainFrame.Active = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 8)
+MainCorner.Parent = MainFrame
+
+-- Tiêu đề Menu
+local Title = Instance.new("TextLabel")
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 10, 0, 5)
+Title.Size = UDim2.new(0, 190, 0, 30)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "Evade Survival Hub"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+
+-- Nút Bật/Tắt ESP Nextbot
+local EspNextbotBtn = Instance.new("TextButton")
+EspNextbotBtn.Parent = MainFrame
+EspNextbotBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+EspNextbotBtn.Position = UDim2.new(0, 10, 0, 40)
+EspNextbotBtn.Size = UDim2.new(0, 190, 0, 32)
+EspNextbotBtn.Font = Enum.Font.GothamBold
+EspNextbotBtn.Text = "ESP Nextbot: OFF"
+EspNextbotBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+EspNextbotBtn.TextSize = 12
+
+local Corner1 = Instance.new("UICorner")
+Corner1.CornerRadius = UDim.new(0, 6)
+Corner1.Parent = EspNextbotBtn
+
+-- Nút Bật/Tắt ESP Người chơi
+local EspPlayerBtn = Instance.new("TextButton")
+EspPlayerBtn.Parent = MainFrame
+EspPlayerBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+EspPlayerBtn.Position = UDim2.new(0, 10, 0, 80)
+EspPlayerBtn.Size = UDim2.new(0, 190, 0, 32)
+EspPlayerBtn.Font = Enum.Font.GothamBold
+EspPlayerBtn.Text = "ESP Players: OFF"
+EspPlayerBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+EspPlayerBtn.TextSize = 12
+
+local Corner2 = Instance.new("UICorner")
+Corner2.CornerRadius = UDim.new(0, 6)
+Corner2.Parent = EspPlayerBtn
+
+-- Nút Bật/Tắt ESP Mục tiêu / Vật phẩm
+local EspItemBtn = Instance.new("TextButton")
+EspItemBtn.Parent = MainFrame
+EspItemBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+EspItemBtn.Position = UDim2.new(0, 10, 0, 120)
+EspItemBtn.Size = UDim2.new(0, 190, 0, 32)
+EspItemBtn.Font = Enum.Font.GothamBold
+EspItemBtn.Text = "ESP Items/Objectives: OFF"
+EspItemBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+EspItemBtn.TextSize = 11
+
+local Corner3 = Instance.new("UICorner")
+Corner3.CornerRadius = UDim.new(0, 6)
+Corner3.Parent = EspItemBtn
+
+-- Ô nhập Tốc độ chạy (WalkSpeed)
+local SpeedBox = Instance.new("TextBox")
+SpeedBox.Parent = MainFrame
+SpeedBox.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+SpeedBox.Position = UDim2.new(0, 10, 0, 165)
+SpeedBox.Size = UDim2.new(0, 190, 0, 32)
+SpeedBox.Font = Enum.Font.Gotham
+SpeedBox.Text = "WalkSpeed: 50"
+SpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedBox.TextSize = 12
+SpeedBox.ClearTextOnFocus = false
+
+local BoxCorner = Instance.new("UICorner")
+BoxCorner.CornerRadius = UDim.new(0, 6)
+BoxCorner.Parent = SpeedBox
+
+-- Nút Bật/Tắt Speed Hack
+local SpeedButton = Instance.new("TextButton")
+SpeedButton.Parent = MainFrame
+SpeedButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+SpeedButton.Position = UDim2.new(0, 10, 0, 205)
+SpeedButton.Size = UDim2.new(0, 190, 0, 32)
+SpeedButton.Font = Enum.Font.GothamBold
+SpeedButton.Text = "Speed Hack: OFF"
+SpeedButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+SpeedButton.TextSize = 12
+
+local Corner4 = Instance.new("UICorner")
+Corner4.CornerRadius = UDim.new(0, 6)
+Corner4.Parent = SpeedButton
+
+-- Ô nhập Trọng lực (Gravity)
+local GravityBox = Instance.new("TextBox")
+GravityBox.Parent = MainFrame
+GravityBox.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+GravityBox.Position = UDim2.new(0, 10, 0, 250)
+GravityBox.Size = UDim2.new(0, 190, 0, 32)
+GravityBox.Font = Enum.Font.Gotham
+GravityBox.Text = "Gravity: 50"
+GravityBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+GravityBox.TextSize = 12
+GravityBox.ClearTextOnFocus = false
+
+local BoxCorner2 = Instance.new("UICorner")
+BoxCorner2.CornerRadius = UDim.new(0, 6)
+BoxCorner2.Parent = GravityBox
+
+-- Nút Bật/Tắt Gravity Hack
+local GravityButton = Instance.new("TextButton")
+GravityButton.Parent = MainFrame
+GravityButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+GravityButton.Position = UDim2.new(0, 10, 0, 290)
+GravityButton.Size = UDim2.new(0, 190, 0, 32)
+GravityButton.Font = Enum.Font.GothamBold
+GravityButton.Text = "Gravity Hack: OFF"
+GravityButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+GravityButton.TextSize = 12
+
+local Corner5 = Instance.new("UICorner")
+Corner5.CornerRadius = UDim.new(0, 6)
+Corner5.Parent = GravityButton
+
+-- Cấu hình trạng thái
+local Config = {
+    EspNextbot = false,
+    EspPlayer = false,
+    EspItem = false,
+    SpeedEnabled = false,
+    CustomSpeed = 50,
+    GravityEnabled = false,
+    CustomGravity = 50
+}
+
+-- Hàm tạo Highlight chung
+local function applyHighlight(target, color, name)
+    if not target:FindFirstChild(name) then
+        local hl = Instance.new("Highlight")
+        hl.Name = name
+        hl.Adornee = target
+        hl.FillColor = color
+        hl.FillTransparency = 0.5
+        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+        hl.OutlineTransparency = 0
+        hl.Parent = target
+    end
+end
+
+local function removeHighlight(target, name)
+    local hl = target:FindFirstChild(name)
+    if hl then
+        hl:Destroy()
+    end
+end
+
+-- Vòng lặp chính xử lý ESP, Tốc độ và Trọng lực
+RunService.RenderStepped:Connect(function()
+    -- 1. Xử lý ESP Nextbot (Màu Đỏ)
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") then
+            local isPlayerChar = Players:GetPlayerFromCharacter(obj) ~= nil
+            
+            if Config.EspNextbot then
+                if not isPlayerChar and obj ~= LocalPlayer.Character and (obj:FindFirstChild("Humanoid") or obj:FindFirstChild("Sound")) then
+                    if obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart then
+                        applyHighlight(obj, Color3.fromRGB(255, 0, 0), "NextbotESP")
+                    end
+                end
+            else
+                removeHighlight(obj, "NextbotESP")
+            end
+            
+            -- 2. Xử lý ESP Người chơi (Màu Xanh Dương)
+            if Config.EspPlayer then
+                if isPlayerChar and obj ~= LocalPlayer.Character then
+                    applyHighlight(obj, Color3.fromRGB(0, 150, 255), "PlayerESP")
+                end
+            else
+                removeHighlight(obj, "PlayerESP")
+            end
+            
+            -- 3. Xử lý ESP Vật phẩm / Mục tiêu nhiệm vụ (Màu Vàng)
+            if Config.EspItem then
+                if obj.Name:lower():find("item") or obj.Name:lower():find("objective") or obj.Name:lower():find("pickup") or obj.Name:lower():find("soda") then
+                    applyHighlight(obj, Color3.fromRGB(255, 220, 0), "ItemESP")
+                end
+            else
+                removeHighlight(obj, "ItemESP")
+            end
+        end
+    end
+    
+    -- Xử lý tốc độ chạy không giới hạn
+    if Config.SpeedEnabled then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = Config.CustomSpeed
+        end
+    end
+    
+    -- Xử lý trọng lực thế giới không giới hạn
+    if Config.GravityEnabled then
+        workspace.Gravity = Config.CustomGravity
+    end
+end)
+
+-- Sự kiện bấm nút giao diện
+EspNextbotBtn.MouseButton1Click:Connect(function()
+    Config.EspNextbot = not Config.EspNextbot
+    EspNextbotBtn.Text = Config.EspNextbot and "ESP Nextbot: ON" or "ESP Nextbot: OFF"
+    EspNextbotBtn.TextColor3 = Config.EspNextbot and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+end)
+
+EspPlayerBtn.MouseButton1Click:Connect(function()
+    Config.EspPlayer = not Config.EspPlayer
+    EspPlayerBtn.Text = Config.EspPlayer and "ESP Players: ON" or "ESP Players: OFF"
+    EspPlayerBtn.TextColor3 = Config.EspPlayer and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+end)
+
+EspItemBtn.MouseButton1Click:Connect(function()
+    Config.EspItem = not Config.EspItem
+    EspItemBtn.Text = Config.EspItem and "ESP Items/Objectives: ON" or "ESP Items/Objectives: OFF"
+    EspItemBtn.TextColor3 = Config.EspItem and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+end)
+
+SpeedBox.FocusLost:Connect(function()
+    local text = SpeedBox.Text:match("[-%d%.]+")
+    local num = tonumber(text)
+    if num then
+        Config.CustomSpeed = num
+        SpeedBox.Text = "WalkSpeed: " .. num
+    else
+        SpeedBox.Text = "WalkSpeed: " .. Config.CustomSpeed
+    end
+end)
+
+SpeedButton.MouseButton1Click:Connect(function()
+    Config.SpeedEnabled = not Config.SpeedEnabled
+    SpeedButton.Text = Config.SpeedEnabled and "Speed Hack: ON" or "Speed Hack: OFF"
+    SpeedButton.TextColor3 = Config.SpeedEnabled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+    if not Config.SpeedEnabled then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = 16
+        end
+    end
+end)
+
+-- Xử lý nhập số Gravity
+GravityBox.FocusLost:Connect(function()
+    local text = GravityBox.Text:match("[-%d%.]+")
+    local num = tonumber(text)
+    if num then
+        Config.CustomGravity = num
+        GravityBox.Text = "Gravity: " .. num
+    else
+        GravityBox.Text = "Gravity: " .. Config.CustomGravity
+    end
+end)
+
+GravityButton.MouseButton1Click:Connect(function()
+    Config.GravityEnabled = not Config.GravityEnabled
+    GravityButton.Text = Config.GravityEnabled and "Gravity Hack: ON" or "Gravity Hack: OFF"
+    GravityButton.TextColor3 = Config.GravityEnabled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+    if not Config.GravityEnabled then
+        workspace.Gravity = 196.2 -- Trả về trọng lực mặc định của Roblox
+    end
+end)
