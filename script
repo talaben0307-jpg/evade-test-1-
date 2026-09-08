@@ -3,12 +3,10 @@ local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 
--- Xóa GUI cũ nếu đã tồn tại
 if CoreGui:FindFirstChild("EvadeHub_GUI") then
     CoreGui.EvadeHub_GUI:Destroy()
 end
 
--- Tạo GUI chính
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "EvadeHub_GUI"
 ScreenGui.Parent = CoreGui
@@ -26,7 +24,6 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 8)
 MainCorner.Parent = MainFrame
 
--- Tiêu đề Menu
 local Title = Instance.new("TextLabel")
 Title.Parent = MainFrame
 Title.BackgroundTransparency = 1
@@ -37,7 +34,6 @@ Title.Text = "Evade Survival Hub"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 14
 
--- Nút Bật/Tắt ESP Nextbot
 local EspNextbotBtn = Instance.new("TextButton")
 EspNextbotBtn.Parent = MainFrame
 EspNextbotBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -52,7 +48,6 @@ local Corner1 = Instance.new("UICorner")
 Corner1.CornerRadius = UDim.new(0, 6)
 Corner1.Parent = EspNextbotBtn
 
--- Nút Bật/Tắt ESP Người chơi
 local EspPlayerBtn = Instance.new("TextButton")
 EspPlayerBtn.Parent = MainFrame
 EspPlayerBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -67,7 +62,6 @@ local Corner2 = Instance.new("UICorner")
 Corner2.CornerRadius = UDim.new(0, 6)
 Corner2.Parent = EspPlayerBtn
 
--- Nút Bật/Tắt ESP Mục tiêu / Vật phẩm
 local EspItemBtn = Instance.new("TextButton")
 EspItemBtn.Parent = MainFrame
 EspItemBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -82,7 +76,6 @@ local Corner3 = Instance.new("UICorner")
 Corner3.CornerRadius = UDim.new(0, 6)
 Corner3.Parent = EspItemBtn
 
--- Ô nhập Tốc độ chạy (WalkSpeed)
 local SpeedBox = Instance.new("TextBox")
 SpeedBox.Parent = MainFrame
 SpeedBox.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -98,7 +91,6 @@ local BoxCorner = Instance.new("UICorner")
 BoxCorner.CornerRadius = UDim.new(0, 6)
 BoxCorner.Parent = SpeedBox
 
--- Nút Bật/Tắt Speed Hack
 local SpeedButton = Instance.new("TextButton")
 SpeedButton.Parent = MainFrame
 SpeedButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -113,7 +105,6 @@ local Corner4 = Instance.new("UICorner")
 Corner4.CornerRadius = UDim.new(0, 6)
 Corner4.Parent = SpeedButton
 
--- Ô nhập Trọng lực (Gravity)
 local GravityBox = Instance.new("TextBox")
 GravityBox.Parent = MainFrame
 GravityBox.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -129,7 +120,6 @@ local BoxCorner2 = Instance.new("UICorner")
 BoxCorner2.CornerRadius = UDim.new(0, 6)
 BoxCorner2.Parent = GravityBox
 
--- Nút Bật/Tắt Gravity Hack
 local GravityButton = Instance.new("TextButton")
 GravityButton.Parent = MainFrame
 GravityButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
@@ -144,7 +134,6 @@ local Corner5 = Instance.new("UICorner")
 Corner5.CornerRadius = UDim.new(0, 6)
 Corner5.Parent = GravityButton
 
--- Cấu hình trạng thái
 local Config = {
     EspNextbot = false,
     EspPlayer = false,
@@ -155,7 +144,6 @@ local Config = {
     CustomGravity = 50
 }
 
--- Hàm tạo Highlight chung
 local function applyHighlight(target, color, name)
     if not target:FindFirstChild(name) then
         local hl = Instance.new("Highlight")
@@ -176,35 +164,41 @@ local function removeHighlight(target, name)
     end
 end
 
--- Vòng lặp chính xử lý ESP, Tốc độ và Trọng lực
-RunService.RenderStepped:Connect(function()
-    -- 1. Xử lý ESP Nextbot (Màu Đỏ)
-    for _, obj in ipairs(workspace:GetDescendants()) do
+-- Tối ưu hóa vòng lặp chạy thưa hơn để giảm lag
+local timer = 0
+RunService.RenderStepped:Connect(function(dt)
+    timer = timer + dt
+    if timer < 0.2 then return end -- Chỉ quét mỗi 0.2 giây thay vì quét liên tục mỗi khung hình
+    timer = 0
+
+    -- 1. ESP Người chơi
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            if Config.EspPlayer then
+                applyHighlight(player.Character, Color3.fromRGB(0, 150, 255), "PlayerESP")
+            else
+                removeHighlight(player.Character, "PlayerESP")
+            end
+        end
+    end
+
+    -- 2. Quét tối ưu trong workspace (Giảm phạm vi tìm kiếm)
+    local activeFolder = workspace:FindFirstChild("Active") or workspace
+    for _, obj in ipairs(activeFolder:GetChildren()) do
         if obj:IsA("Model") then
             local isPlayerChar = Players:GetPlayerFromCharacter(obj) ~= nil
             
             if Config.EspNextbot then
-                if not isPlayerChar and obj ~= LocalPlayer.Character and (obj:FindFirstChild("Humanoid") or obj:FindFirstChild("Sound")) then
-                    if obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart then
-                        applyHighlight(obj, Color3.fromRGB(255, 0, 0), "NextbotESP")
-                    end
+                if not isPlayerChar and (obj:FindFirstChild("Humanoid") or obj:FindFirstChild("Sound")) then
+                    applyHighlight(obj, Color3.fromRGB(255, 0, 0), "NextbotESP")
                 end
             else
                 removeHighlight(obj, "NextbotESP")
             end
             
-            -- 2. Xử lý ESP Người chơi (Màu Xanh Dương)
-            if Config.EspPlayer then
-                if isPlayerChar and obj ~= LocalPlayer.Character then
-                    applyHighlight(obj, Color3.fromRGB(0, 150, 255), "PlayerESP")
-                end
-            else
-                removeHighlight(obj, "PlayerESP")
-            end
-            
-            -- 3. Xử lý ESP Vật phẩm / Mục tiêu nhiệm vụ (Màu Vàng)
             if Config.EspItem then
-                if obj.Name:lower():find("item") or obj.Name:lower():find("objective") or obj.Name:lower():find("pickup") or obj.Name:lower():find("soda") then
+                local lname = obj.Name:lower()
+                if lname:find("item") or lname:find("objective") or lname:find("pickup") or lname:find("soda") or lname:find("medkit") then
                     applyHighlight(obj, Color3.fromRGB(255, 220, 0), "ItemESP")
                 end
             else
@@ -213,7 +207,6 @@ RunService.RenderStepped:Connect(function()
         end
     end
     
-    -- Xử lý tốc độ chạy không giới hạn
     if Config.SpeedEnabled then
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
@@ -221,13 +214,11 @@ RunService.RenderStepped:Connect(function()
         end
     end
     
-    -- Xử lý trọng lực thế giới không giới hạn
     if Config.GravityEnabled then
         workspace.Gravity = Config.CustomGravity
     end
 end)
 
--- Sự kiện bấm nút giao diện
 EspNextbotBtn.MouseButton1Click:Connect(function()
     Config.EspNextbot = not Config.EspNextbot
     EspNextbotBtn.Text = Config.EspNextbot and "ESP Nextbot: ON" or "ESP Nextbot: OFF"
@@ -269,7 +260,6 @@ SpeedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Xử lý nhập số Gravity
 GravityBox.FocusLost:Connect(function()
     local text = GravityBox.Text:match("[-%d%.]+")
     local num = tonumber(text)
@@ -286,6 +276,6 @@ GravityButton.MouseButton1Click:Connect(function()
     GravityButton.Text = Config.GravityEnabled and "Gravity Hack: ON" or "Gravity Hack: OFF"
     GravityButton.TextColor3 = Config.GravityEnabled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
     if not Config.GravityEnabled then
-        workspace.Gravity = 196.2 -- Trả về trọng lực mặc định của Roblox
+        workspace.Gravity = 196.2
     end
 end)
